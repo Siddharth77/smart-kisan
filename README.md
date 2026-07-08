@@ -53,13 +53,16 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Deploy (Vercel + Turso)
 
-See [docs/VERCEL_DEPLOY.md](docs/VERCEL_DEPLOY.md) for step-by-step instructions.
+> **Live URL:** _Add after deploy — `https://your-app.vercel.app`_
 
-Quick summary:
-1. Create a Turso DB (`libsql://...` + auth token)
-2. Push repo to GitHub and import on Vercel
-3. Set `DATABASE_URL`, `TURSO_AUTH_TOKEN`, `NEXT_PUBLIC_APP_URL`
-4. Deploy → then `POST /api/demo/reset` to seed
+See [docs/VERCEL_DEPLOY.md](docs/VERCEL_DEPLOY.md) and [docs/DEPLOYMENT_CHECKLIST.md](docs/DEPLOYMENT_CHECKLIST.md).
+
+**Quick steps:**
+1. Create Turso DB → get `libsql://` URL + auth token
+2. Import repo on [vercel.com/new](https://vercel.com/new)
+3. Set env vars: `DATABASE_URL`, `TURSO_AUTH_TOKEN`, `NEXT_PUBLIC_APP_URL`
+4. Deploy → `curl -X POST https://your-app.vercel.app/api/demo/reset`
+5. Verify: `curl https://your-app.vercel.app/api/health`
 
 ## Docs
 

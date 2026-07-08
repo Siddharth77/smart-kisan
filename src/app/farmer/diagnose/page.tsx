@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { DEMO_IMAGES } from "@/lib/diagnosis-engine";
 import { DemoStepNav } from "@/components/DemoStepNav";
 import { Button, Card, PageShell } from "@/components/ui";
@@ -12,22 +13,44 @@ export default function DiagnosePage() {
   const [selected, setSelected] = useState(DEMO_FILES[0]);
   const [result, setResult] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(false);
+  const [farmerId, setFarmerId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setFarmerId(sessionStorage.getItem("farmerId"));
+  }, []);
 
   async function diagnose() {
-    const farmerId = sessionStorage.getItem("farmerId");
-    if (!farmerId) {
-      alert("Register a farmer first");
-      return;
-    }
+    const id = farmerId ?? sessionStorage.getItem("farmerId");
+    if (!id) return;
 
     setLoading(true);
     const res = await fetch("/api/diagnose", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ farmerId, imageFilename: selected }),
+      body: JSON.stringify({ farmerId: id, imageFilename: selected }),
     });
     setResult(await res.json());
     setLoading(false);
+  }
+
+  if (!farmerId) {
+    return (
+      <PageShell title="Crop health check" subtitle="Demo photo diagnosis">
+        <Card>
+          <p className="text-emerald-800">
+            No farmer session. Start from the home page quick demo or register first.
+          </p>
+          <div className="mt-4 flex gap-3">
+            <Link href="/">
+              <Button>Go to home</Button>
+            </Link>
+            <Link href="/farmer/register">
+              <Button variant="secondary">Register</Button>
+            </Link>
+          </div>
+        </Card>
+      </PageShell>
+    );
   }
 
   return (
