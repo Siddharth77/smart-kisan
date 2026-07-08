@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import cropRules from "@/lib/seed-data/crop_rules.json";
 import { DemoStepNav } from "@/components/DemoStepNav";
@@ -9,16 +10,28 @@ import type { CropName, RecommendationResult } from "@/types";
 export default function RecommendPage() {
   const [result, setResult] = useState<RecommendationResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [plotId, setPlotId] = useState<string | null>(null);
 
   const getRecommendation = useCallback(async (id: string) => {
     setLoading(true);
+    setError("");
+
     const res = await fetch("/api/recommend", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ plotId: id }),
     });
+
     const data = await res.json();
+
+    if (!res.ok || !Array.isArray(data.recommended)) {
+      setResult(null);
+      setError(data.error ?? "Could not load recommendation. Try registering again.");
+      setLoading(false);
+      return;
+    }
+
     setResult(data);
     setLoading(false);
   }, []);
@@ -32,15 +45,15 @@ export default function RecommendPage() {
   return (
     <PageShell
       title="Crop recommendation"
-      subtitle="Rules engine using soil, rainfall & groundwater data"
+      subtitle="Rules engine using soil, rainfall and groundwater"
     >
       {!plotId ? (
         <Card>
           <p className="text-emerald-800">
             No plot found.{" "}
-            <a href="/farmer/register" className="underline">
+            <Link href="/farmer/register" className="underline">
               Register first
-            </a>
+            </Link>
           </p>
         </Card>
       ) : (
@@ -52,7 +65,21 @@ export default function RecommendPage() {
             {loading ? "Analyzing…" : "Refresh recommendation"}
           </Button>
 
-          {result && (
+          {error && (
+            <Card className="mt-4">
+              <p className="text-sm text-red-600">{error}</p>
+              <div className="mt-3 flex gap-3">
+                <Link href="/">
+                  <Button>Quick demo</Button>
+                </Link>
+                <Link href="/farmer/register">
+                  <Button variant="secondary">Register again</Button>
+                </Link>
+              </div>
+            </Card>
+          )}
+
+          {result?.recommended && (
             <div className="mt-6 space-y-4">
               <Card>
                 <h2 className="font-semibold text-emerald-900">Top crops</h2>

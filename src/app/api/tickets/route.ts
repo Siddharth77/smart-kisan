@@ -21,8 +21,7 @@ export async function PATCH(request: Request) {
     });
 
     return NextResponse.json(ticket);
-  } catch (error) {
-    console.error(error);
+  } catch {
     return NextResponse.json({ error: "Failed to update ticket" }, { status: 500 });
   }
 }

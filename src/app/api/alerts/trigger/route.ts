@@ -13,14 +13,10 @@ export async function POST(request: Request) {
     }
 
     if (!farmerId) {
-      return NextResponse.json(
-        { error: "No farmer found. Register a farmer first." },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "No farmer found." }, { status: 400 });
     }
 
     const alertData = triggerDrySpellAlert();
-
     const alert = await store.createAlert({
       farmerId,
       type: alertData.type,
@@ -29,8 +25,7 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json(alert);
-  } catch (error) {
-    console.error(error);
+  } catch {
     return NextResponse.json({ error: "Failed to trigger alert" }, { status: 500 });
   }
 }

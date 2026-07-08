@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { ai } from "@/lib/ai-provider";
-import { needsRSKTicket } from "@/lib/diagnosis-engine";
+import { diagnoseImage, needsRSKTicket } from "@/lib/diagnosis-engine";
 import { RSK_TICKET_MESSAGE } from "@/lib/i18n/te-templates";
 import { store } from "@/lib/store";
 
@@ -15,7 +14,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const result = await ai.diagnose(imageFilename);
+    const result = diagnoseImage(imageFilename);
 
     const diagnosis = await store.createDiagnosis({
       farmerId,
@@ -29,7 +28,6 @@ export async function POST(request: Request) {
     let ticket = null;
     if (needsRSKTicket(result.confidence)) {
       ticket = await store.createTicket(diagnosis.id);
-
       await store.createAlert({
         farmerId,
         type: "rsk_referral",
@@ -39,8 +37,7 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ ...result, diagnosisId: diagnosis.id, ticket });
-  } catch (error) {
-    console.error(error);
+  } catch {
     return NextResponse.json({ error: "Diagnosis failed" }, { status: 500 });
   }
 }

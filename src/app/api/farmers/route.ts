@@ -5,30 +5,39 @@ import { store } from "@/lib/store";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, phone, village, district = "Warangal", acres, cropSeason = "kharif" } = body;
-
-    if (!name || !phone || !village || !acres) {
-      return NextResponse.json(
-        { error: "name, phone, village, and acres are required" },
-        { status: 400 },
-      );
-    }
-
-    const ctx = buildPlotContext(village, district, Number(acres), cropSeason);
-
-    const farmer = await store.createFarmer({
+    const {
       name,
       phone,
       village,
+      district = "Warangal",
+      acres,
+      cropSeason = "kharif",
+    } = body;
+
+    const acresNum = Number(acres);
+
+    if (!name?.trim() || !phone?.trim() || !village?.trim()) {
+      return NextResponse.json({ error: "All fields are required." }, { status: 400 });
+    }
+
+    if (!Number.isFinite(acresNum) || acresNum <= 0) {
+      return NextResponse.json({ error: "Invalid plot size." }, { status: 400 });
+    }
+
+    const ctx = buildPlotContext(village.trim(), district, acresNum, cropSeason);
+
+    const farmer = await store.createFarmer({
+      name: name.trim(),
+      phone: phone.trim(),
+      village: village.trim(),
       district,
-      acres: Number(acres),
+      acres: acresNum,
       soilType: ctx.soilType,
       cropSeason,
     });
 
     return NextResponse.json(farmer);
-  } catch (error) {
-    console.error(error);
+  } catch {
     return NextResponse.json({ error: "Failed to create farmer" }, { status: 500 });
   }
 }

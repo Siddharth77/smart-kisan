@@ -5,7 +5,6 @@ import type {
   CreateFarmerInput,
   CreateRecommendationInput,
   DataStore,
-  FarmerWithPlots,
   UpdateTicketInput,
 } from "./types";
 
@@ -126,7 +125,3 @@ export const prismaStore: DataStore = {
     });
   },
 };
-
-export async function seedPrismaDatabase(): Promise<FarmerWithPlots> {
-  return prismaStore.reset();
-}

@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { ai } from "@/lib/ai-provider";
-import { buildPlotContext } from "@/lib/crop-engine";
+import { buildPlotContext, recommendCrops } from "@/lib/crop-engine";
 import { store } from "@/lib/store";
 
 export async function POST(request: Request) {
@@ -12,7 +11,6 @@ export async function POST(request: Request) {
     }
 
     const plot = await store.findPlotWithFarmer(plotId);
-
     if (!plot) {
       return NextResponse.json({ error: "Plot not found" }, { status: 404 });
     }
@@ -24,7 +22,7 @@ export async function POST(request: Request) {
       plot.cropSeason,
     );
 
-    const result = await ai.recommend(ctx);
+    const result = recommendCrops(ctx);
 
     const recommendation = await store.createRecommendation({
       plotId: plot.id,
@@ -35,8 +33,7 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ ...result, id: recommendation.id });
-  } catch (error) {
-    console.error(error);
+  } catch {
     return NextResponse.json({ error: "Recommendation failed" }, { status: 500 });
   }
 }

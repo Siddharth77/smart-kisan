@@ -44,8 +44,4 @@ export function needsRSKTicket(confidence: number): boolean {
   return confidence < RSK_CONFIDENCE_THRESHOLD;
 }
 
-export const DEMO_IMAGES = Object.keys(DEMO_DIAGNOSES).map(
-  (name) => `/demo-crops/${name}`,
-);
-
 export { RSK_CONFIDENCE_THRESHOLD };

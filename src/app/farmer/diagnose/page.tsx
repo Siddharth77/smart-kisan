@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { DEMO_IMAGES } from "@/lib/diagnosis-engine";
 import { DemoStepNav } from "@/components/DemoStepNav";
 import { Button, Card, PageShell } from "@/components/ui";
 
@@ -35,18 +34,12 @@ export default function DiagnosePage() {
 
   if (!farmerId) {
     return (
-      <PageShell title="Crop health check" subtitle="Demo photo diagnosis">
+      <PageShell title="Crop health check" subtitle="Upload a crop photo for diagnosis">
         <Card>
-          <p className="text-emerald-800">
-            No farmer session. Start from the home page quick demo or register first.
-          </p>
+          <p className="text-emerald-800">Register a farmer or start the quick demo first.</p>
           <div className="mt-4 flex gap-3">
-            <Link href="/">
-              <Button>Go to home</Button>
-            </Link>
-            <Link href="/farmer/register">
-              <Button variant="secondary">Register</Button>
-            </Link>
+            <Link href="/"><Button>Home</Button></Link>
+            <Link href="/farmer/register"><Button variant="secondary">Register</Button></Link>
           </div>
         </Card>
       </PageShell>
@@ -54,14 +47,8 @@ export default function DiagnosePage() {
   }
 
   return (
-    <PageShell
-      title="Crop health check"
-      subtitle="Demo photo diagnosis (rules-based mock)"
-    >
+    <PageShell title="Crop health check" subtitle="Select a demo crop image">
       <Card>
-        <p className="mb-4 text-sm text-emerald-700">
-          Select a demo crop image. Low confidence (&lt;80%) creates an RSK ticket.
-        </p>
         <div className="grid grid-cols-3 gap-3">
           {DEMO_FILES.map((file) => (
             <button
@@ -106,9 +93,6 @@ export default function DiagnosePage() {
         </Card>
       )}
 
-      <p className="mt-4 text-xs text-emerald-600">
-        Available demo images: {DEMO_IMAGES.join(", ")}
-      </p>
       <DemoStepNav current={4} />
     </PageShell>
   );

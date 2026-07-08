@@ -29,7 +29,7 @@ export default function Home() {
   return (
     <PageShell
       title="Kisan Alert"
-      subtitle="Voice & SMS agricultural intelligence for small farmers — local MVP"
+      subtitle="Voice & SMS agricultural intelligence for small farmers"
     >
       <Card>
         <p className="text-emerald-800">

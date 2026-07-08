@@ -8,18 +8,8 @@ export async function GET() {
       status: "ok",
       storage: storageMode(),
       farmerCount,
-      timestamp: new Date().toISOString(),
     });
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      {
-        status: "error",
-        storage: storageMode(),
-        message:
-          error instanceof Error ? error.message : "Health check failed",
-      },
-      { status: 503 },
-    );
+  } catch {
+    return NextResponse.json({ status: "error" }, { status: 503 });
   }
 }
