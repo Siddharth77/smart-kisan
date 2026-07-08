@@ -1,13 +1,8 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { store } from "@/lib/store";
 
 export async function GET() {
-  const tickets = await db.rSKTicket.findMany({
-    include: {
-      diagnosis: true,
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  const tickets = await store.listTickets();
   return NextResponse.json(tickets);
 }
 
@@ -19,14 +14,10 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "id is required" }, { status: 400 });
     }
 
-    const ticket = await db.rSKTicket.update({
-      where: { id },
-      data: {
-        status: status ?? "resolved",
-        expertNote,
-        resolvedAt: status === "resolved" ? new Date() : undefined,
-      },
-      include: { diagnosis: true },
+    const ticket = await store.updateTicket(id, {
+      status: status ?? "resolved",
+      expertNote,
+      resolvedAt: status === "resolved" ? new Date() : undefined,
     });
 
     return NextResponse.json(ticket);

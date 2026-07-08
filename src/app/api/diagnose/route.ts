@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { ai } from "@/lib/ai-provider";
 import { needsRSKTicket } from "@/lib/diagnosis-engine";
 import { RSK_TICKET_MESSAGE } from "@/lib/i18n/te-templates";
-import { db } from "@/lib/db";
+import { store } from "@/lib/store";
 
 export async function POST(request: Request) {
   try {
@@ -17,30 +17,24 @@ export async function POST(request: Request) {
 
     const result = await ai.diagnose(imageFilename);
 
-    const diagnosis = await db.diagnosis.create({
-      data: {
-        farmerId,
-        imagePath: result.imagePath,
-        disease: result.disease,
-        confidence: result.confidence,
-        action: result.action,
-        actionTe: result.actionTe,
-      },
+    const diagnosis = await store.createDiagnosis({
+      farmerId,
+      imagePath: result.imagePath,
+      disease: result.disease,
+      confidence: result.confidence,
+      action: result.action,
+      actionTe: result.actionTe,
     });
 
     let ticket = null;
     if (needsRSKTicket(result.confidence)) {
-      ticket = await db.rSKTicket.create({
-        data: { diagnosisId: diagnosis.id },
-      });
+      ticket = await store.createTicket(diagnosis.id);
 
-      await db.alert.create({
-        data: {
-          farmerId,
-          type: "rsk_referral",
-          message: RSK_TICKET_MESSAGE.en,
-          messageTe: RSK_TICKET_MESSAGE.te,
-        },
+      await store.createAlert({
+        farmerId,
+        type: "rsk_referral",
+        message: RSK_TICKET_MESSAGE.en,
+        messageTe: RSK_TICKET_MESSAGE.te,
       });
     }
 

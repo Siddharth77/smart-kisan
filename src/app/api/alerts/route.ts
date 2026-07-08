@@ -1,15 +1,10 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { store } from "@/lib/store";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const farmerId = searchParams.get("farmerId");
-
-  const alerts = await db.alert.findMany({
-    where: farmerId ? { farmerId } : undefined,
-    orderBy: { createdAt: "desc" },
-  });
-
+  const farmerId = searchParams.get("farmerId") ?? undefined;
+  const alerts = await store.listAlerts(farmerId);
   return NextResponse.json(alerts);
 }
 
@@ -19,10 +14,6 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "id is required" }, { status: 400 });
   }
 
-  const alert = await db.alert.update({
-    where: { id },
-    data: { read: true },
-  });
-
+  const alert = await store.markAlertRead(id);
   return NextResponse.json(alert);
 }

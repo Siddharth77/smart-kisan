@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { ai } from "@/lib/ai-provider";
 import { buildPlotContext } from "@/lib/crop-engine";
-import { db } from "@/lib/db";
+import { store } from "@/lib/store";
 
 export async function POST(request: Request) {
   try {
@@ -11,10 +11,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "plotId is required" }, { status: 400 });
     }
 
-    const plot = await db.plot.findUnique({
-      where: { id: plotId },
-      include: { farmer: true },
-    });
+    const plot = await store.findPlotWithFarmer(plotId);
 
     if (!plot) {
       return NextResponse.json({ error: "Plot not found" }, { status: 404 });
@@ -29,14 +26,12 @@ export async function POST(request: Request) {
 
     const result = await ai.recommend(ctx);
 
-    const recommendation = await db.recommendation.create({
-      data: {
-        plotId: plot.id,
-        crops: JSON.stringify(result.recommended),
-        reasoning: result.reasoning,
-        reasoningTe: result.reasoningTe,
-        riskScores: JSON.stringify(result.riskScores),
-      },
+    const recommendation = await store.createRecommendation({
+      plotId: plot.id,
+      crops: JSON.stringify(result.recommended),
+      reasoning: result.reasoning,
+      reasoningTe: result.reasoningTe,
+      riskScores: JSON.stringify(result.riskScores),
     });
 
     return NextResponse.json({ ...result, id: recommendation.id });

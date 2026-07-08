@@ -1,16 +1,12 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { storageMode, store } from "@/lib/store";
 
 export async function GET() {
-  const databaseUrl = process.env.DATABASE_URL ?? "";
-  const isTurso =
-    databaseUrl.startsWith("libsql://") || databaseUrl.startsWith("https://");
-
   try {
-    const farmerCount = await db.farmer.count();
+    const farmerCount = await store.countFarmers();
     return NextResponse.json({
       status: "ok",
-      database: isTurso ? "turso" : "sqlite",
+      storage: storageMode(),
       farmerCount,
       timestamp: new Date().toISOString(),
     });
@@ -19,9 +15,9 @@ export async function GET() {
     return NextResponse.json(
       {
         status: "error",
-        database: isTurso ? "turso" : "sqlite",
+        storage: storageMode(),
         message:
-          error instanceof Error ? error.message : "Database connection failed",
+          error instanceof Error ? error.message : "Health check failed",
       },
       { status: 503 },
     );

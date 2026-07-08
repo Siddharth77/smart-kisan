@@ -1,92 +1,52 @@
 # Deployment checklist — Kisan Alert
 
-## Vercel deploy (required)
+## Vercel deploy (zero-config)
 
-### 1. Turso database (free tier)
-
-```bash
-# Install: https://docs.turso.tech/cli/introduction
-turso auth login
-turso db create smart-kisan
-turso db show smart-kisan --url          # → libsql://...
-turso db tokens create smart-kisan       # → auth token
-```
-
-### 2. Vercel project
-
-**Option A — GitHub (recommended)**
-1. [vercel.com/new](https://vercel.com/new) → Import `Siddharth77/smart-kisan`
-2. Framework: Next.js (auto)
-3. Add environment variables (Production + Preview):
-
-| Variable | Example |
-|----------|---------|
-| `DATABASE_URL` | `libsql://smart-kisan-xxx.turso.io` |
-| `TURSO_AUTH_TOKEN` | `eyJ...` |
-| `NEXT_PUBLIC_APP_URL` | `https://smart-kisan.vercel.app` |
-
-4. Deploy
-
-**Option B — CLI**
 ```bash
 npx vercel login
-npx vercel link
-npx vercel env add DATABASE_URL
-npx vercel env add TURSO_AUTH_TOKEN
-npx vercel env add NEXT_PUBLIC_APP_URL
-npx vercel --prod
+npx vercel deploy --prod
 ```
 
-### 3. Post-deploy seed
+No env vars required. Storage mode: **memory** (auto-seeded Lakshmi Devi).
 
-```bash
-curl -X POST https://YOUR-APP.vercel.app/api/demo/reset
-curl https://YOUR-APP.vercel.app/api/health
-```
+### Verify
 
-### 4. Verify E2E on live URL
-
-- [ ] Home → Quick demo (Lakshmi Devi)
-- [ ] Crop recommendation loads
-- [ ] Inbox → Simulate dry spell → Telugu alert
+- [ ] `GET /api/health` → `{ "status": "ok", "storage": "memory" }`
+- [ ] Home → Quick demo → crop recommendation
+- [ ] Inbox → Simulate dry spell
 - [ ] Diagnose → leaf_spot → RSK ticket
 - [ ] /rsk → Mark resolved
-- [ ] `/api/health` returns `{ "status": "ok" }`
+
+---
+
+## Optional upgrades
+
+| Upgrade | When | How |
+|---------|------|-----|
+| **Turso persistence** | Data lost on cold starts bothers you | Set `DATABASE_URL` + `TURSO_AUTH_TOKEN` |
+| **Gemini API** | HACK CORE submission | Add `GeminiAIProvider` |
+| **Firebase / GCP** | Full hackathon stack | See chat plan |
 
 ---
 
 ## HACK CORE submission gaps
 
-| Item | Status | Action |
-|------|--------|--------|
-| **GitHub repo** | ✅ `Siddharth77/smart-kisan` | Add README deploy URL after Vercel |
-| **Deployed prototype** | ⏳ Needs Turso + Vercel env vars | Complete steps above |
-| **Demo video (3–5 min)** | ❌ Missing | Record against live Vercel URL |
-| **Pitch deck (10–12 slides)** | ❌ Missing | See plan in chat history |
-| **Google Cloud / Gemini** | ❌ Not integrated | Add `GeminiAIProvider` for hackathon scoring |
-| **Voice/SMS (Cloud TTS, Dialogflow)** | ⚠️ Mock only | Web Speech + in-app inbox; upgrade for submission |
-| **Earth Engine / BigQuery** | ⚠️ Static seed data | Load IMD rainfall into BigQuery for pitch |
-| **Public data citations** | ⚠️ Partial | Cite IMD, data.gov.in in deck |
+| Item | Status |
+|------|--------|
+| GitHub repo | ✅ Siddharth77/smart-kisan |
+| Deployed prototype | ⏳ Run `vercel deploy --prod` |
+| Demo video | ❌ Record after live URL |
+| Pitch deck | ❌ Not created |
+| Google Cloud / Gemini | ❌ Rules engine only |
 
 ---
 
-## Known limitations (current MVP)
+## Storage modes
 
-| Limitation | Impact | Fix |
-|------------|--------|-----|
-| `sessionStorage` for farmer/plot IDs | New tab loses session | Acceptable for demo; add URL params later |
-| Rules engine, not Gemini | Weak AI story for judges | Phase A: Gemini provider |
-| SVG demo images, not real photos | Diagnosis is mapped, not vision | Gemini multimodal |
-| No real SMS | Inbox simulates SMS | Twilio/MSG91 + Cloud Functions |
-| SQLite local only | Can't deploy without Turso | Turso (documented above) |
+| Environment | `DATABASE_URL` | Storage |
+|-------------|----------------|---------|
+| Vercel (default) | unset | In-memory |
+| Local dev | `file:./dev.db` | SQLite via Prisma |
+| Vercel + Turso | `libsql://...` | Turso via Prisma |
 
----
-
-## Build troubleshooting
-
-| Error | Fix |
-|-------|-----|
-| `DATABASE_URL not configured for Turso` | Set libsql URL in Vercel env vars |
-| `Prisma migrate deploy failed` | Check Turso token; run `turso db show smart-kisan` |
-| `/api/health` 503 | DB credentials wrong or migrations not applied |
-| Empty recommend page | Run `POST /api/demo/reset` or register farmer |
+Set `USE_MEMORY_STORE=true` locally to test memory mode without SQLite.

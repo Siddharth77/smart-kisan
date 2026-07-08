@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
 import { buildPlotContext } from "@/lib/crop-engine";
+import { store } from "@/lib/store";
 
 export async function POST(request: Request) {
   try {
@@ -16,21 +16,14 @@ export async function POST(request: Request) {
 
     const ctx = buildPlotContext(village, district, Number(acres), cropSeason);
 
-    const farmer = await db.farmer.create({
-      data: {
-        name,
-        phone,
-        village,
-        district,
-        plots: {
-          create: {
-            acres: Number(acres),
-            soilType: ctx.soilType,
-            cropSeason,
-          },
-        },
-      },
-      include: { plots: true },
+    const farmer = await store.createFarmer({
+      name,
+      phone,
+      village,
+      district,
+      acres: Number(acres),
+      soilType: ctx.soilType,
+      cropSeason,
     });
 
     return NextResponse.json(farmer);
@@ -41,9 +34,6 @@ export async function POST(request: Request) {
 }
 
 export async function GET() {
-  const farmers = await db.farmer.findMany({
-    include: { plots: true },
-    orderBy: { createdAt: "desc" },
-  });
+  const farmers = await store.listFarmers();
   return NextResponse.json(farmers);
 }

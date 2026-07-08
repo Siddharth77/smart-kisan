@@ -51,18 +51,22 @@ Open [http://localhost:3000](http://localhost:3000).
 - **Rules engine** — no external AI APIs (`src/lib/crop-engine.ts`, `alert-engine.ts`, `diagnosis-engine.ts`)
 - **AI plug-in point** — `src/lib/ai-provider.ts` (swap to real ML later)
 
-## Deploy (Vercel + Turso)
+## Deploy (Vercel)
 
-> **Live URL:** _Add after deploy — `https://your-app.vercel.app`_
+> **No database setup required** — Vercel uses an in-memory store by default (pre-seeded with Lakshmi Devi).
 
-See [docs/VERCEL_DEPLOY.md](docs/VERCEL_DEPLOY.md) and [docs/DEPLOYMENT_CHECKLIST.md](docs/DEPLOYMENT_CHECKLIST.md).
+**Optional:** Add Turso env vars for persistent storage across serverless restarts.
 
-**Quick steps:**
-1. Create Turso DB → get `libsql://` URL + auth token
-2. Import repo on [vercel.com/new](https://vercel.com/new)
-3. Set env vars: `DATABASE_URL`, `TURSO_AUTH_TOKEN`, `NEXT_PUBLIC_APP_URL`
-4. Deploy → `curl -X POST https://your-app.vercel.app/api/demo/reset`
-5. Verify: `curl https://your-app.vercel.app/api/health`
+```bash
+npx vercel login
+npx vercel deploy --prod
+```
+
+Or import [Siddharth77/smart-kisan](https://github.com/Siddharth77/smart-kisan) on [vercel.com/new](https://vercel.com/new).
+
+After deploy, verify: `curl https://your-app.vercel.app/api/health`
+
+See [docs/VERCEL_DEPLOY.md](docs/VERCEL_DEPLOY.md) for optional Turso setup.
 
 ## Docs
 

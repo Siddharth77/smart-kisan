@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { triggerDrySpellAlert } from "@/lib/alert-engine";
-import { db } from "@/lib/db";
+import { store } from "@/lib/store";
 
 export async function POST(request: Request) {
   try {
@@ -8,9 +8,7 @@ export async function POST(request: Request) {
     let farmerId = body.farmerId as string | undefined;
 
     if (!farmerId) {
-      const latest = await db.farmer.findFirst({
-        orderBy: { createdAt: "desc" },
-      });
+      const latest = await store.findLatestFarmer();
       farmerId = latest?.id;
     }
 
@@ -23,13 +21,11 @@ export async function POST(request: Request) {
 
     const alertData = triggerDrySpellAlert();
 
-    const alert = await db.alert.create({
-      data: {
-        farmerId,
-        type: alertData.type,
-        message: alertData.message,
-        messageTe: alertData.messageTe,
-      },
+    const alert = await store.createAlert({
+      farmerId,
+      type: alertData.type,
+      message: alertData.message,
+      messageTe: alertData.messageTe,
     });
 
     return NextResponse.json(alert);
