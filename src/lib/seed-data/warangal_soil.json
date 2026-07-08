@@ -1,0 +1,6 @@
+{
+  "Hanamkonda": { "soilType": "red_loam", "groundwaterDepth": "medium" },
+  "Warangal": { "soilType": "black_cotton", "groundwaterDepth": "shallow" },
+  "Kazipet": { "soilType": "red_sandy", "groundwaterDepth": "deep" },
+  "default": { "soilType": "red_loam", "groundwaterDepth": "medium" }
+}

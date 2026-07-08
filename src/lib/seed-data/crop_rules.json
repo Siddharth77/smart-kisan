@@ -1,0 +1,37 @@
+{
+  "groundnut": {
+    "label": "Groundnut",
+    "labelTe": "వేరుశనగ",
+    "waterNeed": "low",
+    "soilFit": ["red_loam", "red_sandy", "black_cotton"],
+    "seasons": ["kharif", "rabi"]
+  },
+  "maize": {
+    "label": "Maize",
+    "labelTe": "మొక్కజొన్న",
+    "waterNeed": "medium",
+    "soilFit": ["red_loam", "black_cotton"],
+    "seasons": ["kharif"]
+  },
+  "cotton": {
+    "label": "Cotton",
+    "labelTe": "పత్తి",
+    "waterNeed": "high",
+    "soilFit": ["black_cotton", "red_loam"],
+    "seasons": ["kharif"]
+  },
+  "pigeon_pea": {
+    "label": "Pigeon pea",
+    "labelTe": "కంది",
+    "waterNeed": "low",
+    "soilFit": ["red_loam", "red_sandy"],
+    "seasons": ["kharif"]
+  },
+  "rice": {
+    "label": "Rice",
+    "labelTe": "వరి",
+    "waterNeed": "high",
+    "soilFit": ["black_cotton"],
+    "seasons": ["kharif"]
+  }
+}

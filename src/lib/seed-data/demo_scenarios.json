@@ -1,0 +1,14 @@
+{
+  "normal": {
+    "name": "normal",
+    "daysSinceRain": 3,
+    "soilMoisture": 0.52,
+    "forecastMm": 45
+  },
+  "dry_spell": {
+    "name": "dry_spell",
+    "daysSinceRain": 12,
+    "soilMoisture": 0.28,
+    "forecastMm": 5
+  }
+}

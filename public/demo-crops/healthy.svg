@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="180" viewBox="0 0 240 180">
+  <rect width="240" height="180" fill="#ecfdf5"/>
+  <ellipse cx="120" cy="90" rx="80" ry="60" fill="#4ade80"/>
+  <text x="120" y="95" text-anchor="middle" font-size="14" fill="#14532d">Healthy</text>
+  <text x="120" y="170" text-anchor="middle" font-size="12" fill="#065f46">Healthy crop</text>
+</svg>

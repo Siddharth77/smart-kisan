@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Farmer {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String
+  village   String
+  district  String   @default("Warangal")
+  language  String   @default("te")
+  plots     Plot[]
+  alerts    Alert[]
+  createdAt DateTime @default(now())
+}
+
+model Plot {
+  id              String           @id @default(cuid())
+  farmerId        String
+  farmer          Farmer           @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  acres           Float
+  soilType        String?
+  cropSeason      String           @default("kharif")
+  recommendations Recommendation[]
+  createdAt       DateTime         @default(now())
+}
+
+model Recommendation {
+  id          String   @id @default(cuid())
+  plotId      String
+  plot        Plot     @relation(fields: [plotId], references: [id], onDelete: Cascade)
+  crops       String
+  reasoning   String
+  reasoningTe String
+  riskScores  String
+  createdAt   DateTime @default(now())
+}
+
+model Alert {
+  id        String   @id @default(cuid())
+  farmerId  String
+  farmer    Farmer   @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  type      String
+  message   String
+  messageTe String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Diagnosis {
+  id         String     @id @default(cuid())
+  farmerId   String
+  imagePath  String
+  disease    String
+  confidence Float
+  action     String
+  actionTe   String
+  createdAt  DateTime   @default(now())
+  ticket     RSKTicket?
+}
+
+model RSKTicket {
+  id          String    @id @default(cuid())
+  diagnosisId String    @unique
+  diagnosis   Diagnosis @relation(fields: [diagnosisId], references: [id], onDelete: Cascade)
+  status      String    @default("open")
+  expertNote  String?
+  createdAt   DateTime  @default(now())
+  resolvedAt  DateTime?
+}

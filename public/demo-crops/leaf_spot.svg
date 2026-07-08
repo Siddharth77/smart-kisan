@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="180" viewBox="0 0 240 180">
+  <rect width="240" height="180" fill="#ecfdf5"/>
+  <ellipse cx="120" cy="90" rx="80" ry="60" fill="#86efac"/>
+  <circle cx="90" cy="70" r="12" fill="#b45309" opacity="0.8"/>
+  <circle cx="130" cy="85" r="10" fill="#b45309" opacity="0.7"/>
+  <circle cx="110" cy="110" r="14" fill="#b45309" opacity="0.6"/>
+  <text x="120" y="170" text-anchor="middle" font-size="12" fill="#065f46">Leaf spot</text>
+</svg>
